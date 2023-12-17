@@ -5,6 +5,9 @@ import './globals.css';
 export const metadata = {
   title: 'ChatApp | Home',
   description: 'Welcome to the ChatApp',
+  name: 'viewport',
+  content: 'width=device-width',
+  initialscale: 1.0,
 };
 
 export default function RootLayout({
