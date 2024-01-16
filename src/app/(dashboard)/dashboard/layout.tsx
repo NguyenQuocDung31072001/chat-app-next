@@ -1,57 +1,62 @@
-import { Icon, Icons } from '@/components/Icons';
-import SignOutButton from '@/components/SignOutButton';
-import { authOptions } from '@/lib/auth';
-import { getServerSession } from 'next-auth';
-import Image from 'next/image';
-import Link from 'next/link';
-import { notFound } from 'next/navigation';
-import { FC, ReactNode } from 'react';
-import FriendRequestSidebarOptions from '@/components/FriendRequestSidebarOptions';
-import { fetchRedis } from '@/helpers/redis';
-import { getFriendsByUserId } from '@/helpers/get-friends-by-user-id';
-import SidebarChatList from '@/components/SidebarChatList';
-import MobileChatLayout from '@/components/MobileChatLayout';
-import { SidebarOption } from '@/types/typings';
+import { Icon, Icons } from "@/components/Icons"
+import SignOutButton from "@/components/SignOutButton"
+import { authOptions } from "@/lib/auth"
+import { getServerSession } from "next-auth"
+import Image from "next/image"
+import Link from "next/link"
+import { notFound } from "next/navigation"
+import { FC, ReactNode } from "react"
+import FriendRequestSidebarOptions from "@/components/FriendRequestSidebarOptions"
+import { fetchRedis } from "@/helpers/redis"
+import { getFriendsByUserId } from "@/helpers/get-friends-by-user-id"
+import SidebarChatList from "@/components/SidebarChatList"
+import MobileChatLayout from "@/components/MobileChatLayout"
+import { SidebarOption } from "@/types/typings"
 
 interface LayoutProps {
-  children: ReactNode;
+  children: ReactNode
 }
 
 // Done after the video and optional: add page metadata
 export const metadata = {
-  title: 'ChatApp | Dashboard',
-  description: 'Your dashboard',
-  name: 'viewport',
-  content: 'width=device-width',
+  title: "ChatApp | Dashboard",
+  description: "Your dashboard",
+  name: "viewport",
+  content: "width=device-width",
   initialscale: 1.0,
-};
+}
 
 interface LayoutProps {
-  children: ReactNode;
+  children: ReactNode
 }
 
 const sidebarOptions: SidebarOption[] = [
   {
     id: 1,
-    name: 'Add friend',
-    href: '/dashboard/add',
-    Icon: 'UserPlus',
+    name: "Add friend",
+    href: "/dashboard/add",
+    Icon: "UserPlus",
   },
-];
+]
 
-const Layout = async ({ children }: LayoutProps) => {
-  const session = await getServerSession(authOptions);
-  if (!session) notFound();
+const Layout = async ({
+  children,
+}: LayoutProps) => {
+  const session = await getServerSession(
+    authOptions,
+  )
+  if (!session) notFound()
 
-  const friends = await getFriendsByUserId(session.user.id);
-  console.log('friends', friends);
+  const friends = await getFriendsByUserId(
+    session.user.id,
+  )
 
   const unseenRequestCount = (
     (await fetchRedis(
-      'smembers',
-      `user:${session.user.id}:incoming_friend_requests`
+      "smembers",
+      `user:${session.user.id}:incoming_friend_requests`,
     )) as User[]
-  ).length;
+  ).length
 
   return (
     <div className="w-full flex h-screen">
@@ -65,7 +70,10 @@ const Layout = async ({ children }: LayoutProps) => {
       </div>
 
       <div className="hidden md:flex h-full w-full max-w-xs grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6">
-        <Link href="/dashboard" className="flex h-16 shrink-0 items-center">
+        <Link
+          href="/dashboard"
+          className="flex h-16 shrink-0 items-center"
+        >
           <Icons.Logo className="h-8 w-auto text-indigo-600" />
         </Link>
 
@@ -76,9 +84,15 @@ const Layout = async ({ children }: LayoutProps) => {
         ) : null}
 
         <nav className="flex flex-1 flex-col">
-          <ul role="list" className="flex flex-1 flex-col gap-y-7">
+          <ul
+            role="list"
+            className="flex flex-1 flex-col gap-y-7"
+          >
             <li>
-              <SidebarChatList sessionId={session.user.id} friends={friends} />
+              <SidebarChatList
+                sessionId={session.user.id}
+                friends={friends}
+              />
             </li>
 
             <li>
@@ -86,9 +100,12 @@ const Layout = async ({ children }: LayoutProps) => {
                 Overview
               </div>
 
-              <ul role="list" className="-mx-2 mt-2 space-y-1">
+              <ul
+                role="list"
+                className="-mx-2 mt-2 space-y-1"
+              >
                 {sidebarOptions.map((option) => {
-                  const Icon = Icons[option.Icon];
+                  const Icon = Icons[option.Icon]
                   return (
                     <li key={option.id}>
                       <Link
@@ -99,16 +116,20 @@ const Layout = async ({ children }: LayoutProps) => {
                           <Icon className="h-4 w-4" />
                         </span>
 
-                        <span className="truncate">{option.name}</span>
+                        <span className="truncate">
+                          {option.name}
+                        </span>
                       </Link>
                     </li>
-                  );
+                  )
                 })}
                 {
                   <li>
                     <FriendRequestSidebarOptions
                       sessionId={session.user.id}
-                      initialUnseenRequestCount={unseenRequestCount}
+                      initialUnseenRequestCount={
+                        unseenRequestCount
+                      }
                     />
                   </li>
                 }
@@ -122,20 +143,29 @@ const Layout = async ({ children }: LayoutProps) => {
                     fill
                     referrerPolicy="no-referrer"
                     className="rounded-full"
-                    src={session.user.image || ''}
+                    src={session.user.image || ""}
                     alt="Your profile picture"
                   />
                 </div>
 
-                <span className="sr-only">Your profile</span>
+                <span className="sr-only">
+                  Your profile
+                </span>
                 <div className="flex flex-col">
-                  <span aria-hidden="true">{session.user.name}</span>
-                  <span className="text-xs text-zinc-400" aria-hidden="true">
+                  <span aria-hidden="true">
+                    {session.user.name}
+                  </span>
+                  <span
+                    className="text-xs text-zinc-400"
+                    aria-hidden="true"
+                  >
                     {session.user.email}
                   </span>
                 </div>
               </div>
-              {<SignOutButton className="h-full aspect-square" />}
+              {
+                <SignOutButton className="h-full aspect-square" />
+              }
             </li>
           </ul>
         </nav>
@@ -144,7 +174,7 @@ const Layout = async ({ children }: LayoutProps) => {
         {children}
       </aside>
     </div>
-  );
-};
+  )
+}
 
-export default Layout;
+export default Layout
